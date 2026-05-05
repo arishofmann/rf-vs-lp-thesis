@@ -1,0 +1,56 @@
+# Random Forest: Train Finland → Test Portugal (out-of-distribution)
+seed_everything: 42
+trainer:
+  accelerator: cpu
+  devices: 1
+  max_epochs: 1
+  num_sanity_val_steps: 0
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        save_last: true
+
+data:
+  class_path: terratorch.datamodules.EmbeddingClassificationDataModule
+  init_args:
+    batch_size: 4096
+    num_workers: 4
+    train_data_root: ./embeddings/finland/train
+    val_data_root: ./embeddings/finland/validation
+    test_data_root: ./embeddings/portugal/test
+    drop_last: false
+
+model:
+  class_path: terratorch.tasks.RandomForestClassificationTask
+  init_args:
+    model_factory: EncoderDecoderFactory
+    model_args:
+      backbone: IdentityBackbone
+      backbone_out_channels: [768]
+      decoder: RandomForestDecoder
+      decoder_n_estimators: 500
+      decoder_n_jobs: -1
+      decoder_random_state: 42
+      decoder_num_classes: 19
+      num_classes: 19
+    loss: bce
+    class_names:
+      - Agro-forestry areas
+      - Arable land
+      - Beaches, dunes, sands
+      - Broad-leaved forest
+      - Coastal wetlands
+      - Complex cultivation patterns
+      - Coniferous forest
+      - Industrial or commercial units
+      - Inland waters
+      - Inland wetlands
+      - Land principally occupied by agriculture, with significant areas of natural vegetation
+      - Marine waters
+      - Mixed forest
+      - Moors, heathland and sclerophyllous vegetation
+      - Natural grassland and sparsely vegetated areas
+      - Pastures
+      - Permanent crops
+      - Transitional woodland, shrub
+      - Urban fabric

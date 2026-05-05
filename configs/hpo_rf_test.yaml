@@ -1,0 +1,13 @@
+# RF HPO on Finland (FI->FI), test run
+
+static:
+  config: ./configs/config_rf_100.yaml
+
+hpo:
+  model.init_args.model_args.decoder_n_estimators:
+    type: categorical
+    choices: [100, 200, 500]
+
+  model.init_args.model_args.decoder_max_depth:
+    type: categorical
+    choices: [null, 10, 20]
